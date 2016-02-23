@@ -21,7 +21,7 @@
 {
     self = [super init];
     if (self) {
-        [HFileCache shareCache].maxCacheSize = 30; //测试文件夹的话请将它改大，一个文件夹本身大概占用102字节
+        [HFileCache shareCache].maxCacheSize = 30; //if test directory ,please change it bigger, because a empty dir take about 102 byte
         
         [self addMenu:@"add 10 byte data" callback:^(id sender, id obj) {
             NSData *data = [@"1234567890" dataUsingEncoding:NSUTF8StringEncoding];
