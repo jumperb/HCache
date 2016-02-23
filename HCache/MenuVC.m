@@ -1,0 +1,63 @@
+//
+//  MenuVC.m
+//  HCache
+//
+//  Created by zhangchutian on 15/11/18.
+//  Copyright © 2015年 zhangchutian. All rights reserved.
+//
+
+#import "MenuVC.h"
+#import "HFileCache.h"
+#import <NSFileManager+ext.h>
+#import <NSObject+ext.h>
+
+@interface MenuVC ()
+
+@end
+
+@implementation MenuVC
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [HFileCache shareCache].maxCacheSize = 30; //测试文件夹的话请将它改大，一个文件夹本身大概占用102字节
+        
+        [self addMenu:@"add 10 byte data" callback:^(id sender, id obj) {
+            NSData *data = [@"1234567890" dataUsingEncoding:NSUTF8StringEncoding];
+            [[HFileCache shareCache] setData:data forKey:[[NSDate date] description]];
+        }];
+        
+        [self addMenu:@"add 10 byte data" subTitle:@"expire in one min" callback:^(id sender, id obj) {
+            NSData *data = [@"1234567890" dataUsingEncoding:NSUTF8StringEncoding];
+            [[HFileCache shareCache] setData:data forKey:[[NSDate date] description] expire:[NSDate dateWithTimeIntervalSinceNow:60]];
+        }];
+        
+        [self addMenu:@"move in a directory" subTitle:@"contain 15 byte" callback:^(id sender, id obj) {
+            NSString *dirPath = [NSFileManager tempPath:@"test"];
+            [[NSFileManager defaultManager] createDirectoryAtPath:[NSFileManager tempPath:@"test"] withIntermediateDirectories:NO attributes:nil error:nil];
+            NSData *data = [@"1234567890123456" dataUsingEncoding:NSUTF8StringEncoding];
+            [data writeToFile:[dirPath stringByAppendingPathComponent:@"file"] atomically:YES];
+            
+            [[HFileCache shareCache] moveIntoFileItem:dirPath forKey:[[NSDate date] description] expire:[NSDate dateWithTimeIntervalSinceNow:30]];
+        }];
+        
+        [self addMenu:@"clear cache" callback:^(id sender, id obj) {
+            NSLog(@"begin clear");
+            [[HFileCache shareCache] clearExpire:^(id sender) {
+                NSLog(@"clear finish");
+            }];
+        }];
+        
+        [self addMenu:@"show cache" subTitle:@"press me then see the console" callback:^(id sender, id data) {
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSArray *files = [fileManager subpathsOfDirectoryAtPath:[[HFileCache shareCache] cacheDir] error:nil];
+            NSLog(@"%@", [files jsonString]);
+        }];
+    }
+    return self;
+}
+
+
+
+@end
