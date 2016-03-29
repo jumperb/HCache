@@ -238,6 +238,14 @@
             else
             {
                 NSDate *expire = attrs[HFileExpireTimeKey];
+                
+                //because I use NSFileModificationDate as HFileExpireTimeKey, but mostly when file created the time is the same
+                NSDate *created = attrs[NSFileCreationDate];
+                if ((long long)[created timeIntervalSince1970] == (long long)[expire timeIntervalSince1970])
+                {
+                    continue;
+                }
+                
                 if (!expire) shouldDelete = YES;
                 else if ([expire timeIntervalSince1970] <= 0) continue;
                 else
