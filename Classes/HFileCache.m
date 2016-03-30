@@ -241,16 +241,22 @@
                 
                 //because I use NSFileModificationDate as HFileExpireTimeKey, but mostly when file created the time is the same
                 NSDate *created = attrs[NSFileCreationDate];
-                if ((long long)[created timeIntervalSince1970] == (long long)[expire timeIntervalSince1970])
+                long long createdLongLong = (long long)[created timeIntervalSince1970];
+                long long expireLongLong = (long long)[expire timeIntervalSince1970];
+                long long nowLongLong = (long long)[now timeIntervalSince1970];
+                //this file created recently, maybe has not set expire time
+                if (createdLongLong <= expireLongLong && expireLongLong <= createdLongLong + 60)
                 {
                     continue;
                 }
                 
                 if (!expire) shouldDelete = YES;
-                else if ([expire timeIntervalSince1970] <= 0) continue;
+                else if (expireLongLong <= 0) continue;
                 else
                 {
-                    if ([expire timeIntervalSince1970] < [now timeIntervalSince1970])
+                    //expire over 60s,
+                    //because I use NSFileModificationDate as HFileExpireTimeKey, if the file is modified recently, don't clear it
+                    if (expireLongLong < nowLongLong - 60)
                     {
                         shouldDelete = YES;
                     }
