@@ -56,9 +56,18 @@
 /**
  *  is cache exsit
  *  @param key key
- *  @return 
+ *  @return
  */
 - (BOOL)cacheExsitForKey:(NSString *)key;
+
+/**
+ *  is cache exsit
+ *  @param key key
+ *  @param concurrent concurrent or SERIAL
+ *
+ *  @return 
+ */
+- (BOOL)cacheExsitForKey:(NSString *)key concurrent:(BOOL)concurrent;
 
 /**
  *  save cache data
@@ -96,6 +105,15 @@
 - (NSData *)dataForKey:(NSString *)key;
 
 
+/**
+ *  get cached data by key
+ *
+ *  @param key        key
+ *  @param concurrent concurrent or SERIAL
+ *
+ *  @return
+ */
+- (NSData *)dataForKey:(NSString *)key concurrent:(BOOL)concurrent;
 
 /**
  *  directly set expire time to a cached file, if exist

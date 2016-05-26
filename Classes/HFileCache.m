@@ -155,26 +155,55 @@
 
 - (NSData *)dataForKey:(NSString *)key
 {
+    return [self dataForKey:key concurrent:YES];
+}
+
+- (NSData *)dataForKey:(NSString *)key concurrent:(BOOL)concurrent
+{
     if (!key) return nil;
     __block NSData *data = nil;
-    dispatch_sync(self.queue, ^{
-        NSString *filePath = [self cachePathForKey:key];
-        data = [NSData dataWithContentsOfFile:filePath];
-        if (data) [self _setAccessDate:[NSDate date] forFilePath:filePath];
-    });
+    if (concurrent)
+    {
+        dispatch_sync(self.queue, ^{
+            NSString *filePath = [self cachePathForKey:key];
+            data = [NSData dataWithContentsOfFile:filePath];
+            if (data) [self _setAccessDate:[NSDate date] forFilePath:filePath];
+        });
+    }
+    else
+    {
+        dispatch_barrier_sync(self.queue, ^{
+            NSString *filePath = [self cachePathForKey:key];
+            data = [NSData dataWithContentsOfFile:filePath];
+            if (data) [self _setAccessDate:[NSDate date] forFilePath:filePath];
+        });
+    }
     return data;
 }
 - (BOOL)cacheExsitForKey:(NSString *)key
 {
+    return [self cacheExsitForKey:key concurrent:YES];
+}
+- (BOOL)cacheExsitForKey:(NSString *)key concurrent:(BOOL)concurrent
+{
     if (!key) return NO;
     __block BOOL res = NO;
-    dispatch_sync(self.queue, ^{
-        BOOL isDir;
-        res = [[NSFileManager defaultManager] fileExistsAtPath:[self cachePathForKey:key] isDirectory:&isDir];
-    });
+    if (concurrent)
+    {
+        dispatch_sync(self.queue, ^{
+            BOOL isDir;
+            res = [[NSFileManager defaultManager] fileExistsAtPath:[self cachePathForKey:key] isDirectory:&isDir];
+        });
+    }
+    else
+    {
+        dispatch_barrier_sync(self.queue, ^{
+            BOOL isDir;
+            res = [[NSFileManager defaultManager] fileExistsAtPath:[self cachePathForKey:key] isDirectory:&isDir];
+        });
+    }
     return res;
 }
-
 - (long long)getSize
 {
     __block long long size = 0;
