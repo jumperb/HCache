@@ -94,6 +94,10 @@
 {
     if (!key) return nil;
     NSString *fileName = [key md5];
+    if (self.fileExtension)
+    {
+        fileName = [fileName stringByAppendingFormat:@".%@", self.fileExtension];
+    }
     return [self.cacheDir stringByAppendingPathComponent:fileName];
 }
 - (void)setExpire:(NSDate *)expire forFilePath:(NSString *)filePath
