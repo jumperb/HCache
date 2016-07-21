@@ -54,6 +54,19 @@
             NSArray *files = [fileManager subpathsOfDirectoryAtPath:[[HFileCache shareCache] cacheDir] error:nil];
             NSLog(@"%@", [files jsonString]);
         }];
+
+        [self addMenu:@"file extention" subTitle:@"expire in one min" callback:^(id sender, id obj) {
+
+            HFileCache *testCache = [[HFileCache alloc] initWithDomain:@"com.hcache.test"];
+            testCache.fileExtension = @"mp4";
+            NSData *data = [@"1234567890" dataUsingEncoding:NSUTF8StringEncoding];
+            NSString *key = [[NSDate date] description];
+            [testCache setData:data forKey:key expire:[NSDate dateWithTimeIntervalSinceNow:60]];
+            NSData *newData = [testCache dataForKey:key];
+            NSLog(@"%@", [testCache cachePathForKey:key]);
+            NSLog(@"%@", [[NSString alloc] initWithData:newData encoding:NSUTF8StringEncoding]);
+        }];
+
     }
     return self;
 }

@@ -26,7 +26,7 @@
 @property (nonatomic, readonly) NSString *cacheDir;
 //max cache size by byte, default is 50M, if set negative value then it has no size limit
 @property (nonatomic) long long maxCacheSize;
-//默认为空
+//file extention default is nil
 @property (nonatomic) NSString *fileExtension;
 /**
  *  init with custom domain
