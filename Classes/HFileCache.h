@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <HCommonBlock.h>
+#import "HCommonBlock.h"
 
 //TODO zct deal the notification
 #define HFileCacheClearNotification @"HFileCacheClearNotification"

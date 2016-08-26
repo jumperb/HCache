@@ -9,7 +9,7 @@
 #import "HFileCache.h"
 #import <NSFileManager+ext.h>
 #import <UIKit/UIKit.h>
-#import <NSString+ext.h>
+#import "NSString+ext.h"
 
 //#define HFileAccessTimeKey NSFileOwnerAccountID
 //#define HFileExpireTimeKey NSFileGroupOwnerAccountID
