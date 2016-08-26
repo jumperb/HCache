@@ -7,7 +7,7 @@
 //
 
 #import "HFileCache.h"
-#import <NSFileManager+ext.h>
+#import "NSFileManager+ext.h"
 #import <UIKit/UIKit.h>
 #import "NSString+ext.h"
 
