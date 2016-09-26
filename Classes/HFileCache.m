@@ -7,9 +7,9 @@
 //
 
 #import "HFileCache.h"
-#import "NSFileManager+ext.h"
+#import <Hodor/NSFileManager+ext.h>
 #import <UIKit/UIKit.h>
-#import "NSString+ext.h"
+#import <Hodor/NSString+ext.h>
 
 //#define HFileAccessTimeKey NSFileOwnerAccountID
 //#define HFileExpireTimeKey NSFileGroupOwnerAccountID

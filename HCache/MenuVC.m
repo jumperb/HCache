@@ -8,8 +8,8 @@
 
 #import "MenuVC.h"
 #import "HFileCache.h"
-#import <NSFileManager+ext.h>
-#import <NSObject+ext.h>
+#import <Hodor/NSFileManager+ext.h>
+#import <Hodor/NSObject+ext.h>
 
 @interface MenuVC ()
 
