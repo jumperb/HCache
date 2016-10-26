@@ -11,9 +11,9 @@
 #import <UIKit/UIKit.h>
 #import <Hodor/NSString+ext.h>
 
+#define HFileInfoFileSuffix @".hcache.info"
 //#define HFileAccessTimeKey NSFileOwnerAccountID
 //#define HFileExpireTimeKey NSFileGroupOwnerAccountID
-#define HFileAccessTimeKey NSFileCreationDate
 #define HFileExpireTimeKey NSFileModificationDate
 
 @interface HFileCacheFileInfo : NSObject
@@ -123,8 +123,21 @@
 - (void)_setAccessDate:(NSDate *)accessDate forFilePath:(NSString *)filePath
 {
     NSError *error;
-    [[NSFileManager defaultManager] setAttributes:@{HFileAccessTimeKey:accessDate} ofItemAtPath:filePath error:&error];
+    NSString *dateString = [NSString stringWithFormat:@"%.2f", [accessDate timeIntervalSince1970]];
+    NSString *accessFilePath = [filePath stringByAppendingString:HFileInfoFileSuffix];
+    [[NSFileManager defaultManager] removeItemAtPath:accessFilePath error:&error];
+    [dateString writeToFile:accessFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     NSAssert(!error, [error localizedDescription]);
+}
+- (NSTimeInterval)_getAccessDateForFilePath:(NSString *)filePath
+{
+    NSString *accessFilePath = [filePath stringByAppendingString:HFileInfoFileSuffix];
+    NSString *dateString = [NSString stringWithContentsOfFile:accessFilePath encoding:NSUTF8StringEncoding error:nil];
+    if (dateString)
+    {
+        return [dateString doubleValue];
+    }
+    return 0;
 }
 - (void)setData:(NSData *)data forKey:(NSString *)key
 {
@@ -249,6 +262,7 @@
     dispatch_barrier_sync(self.queue, ^{
         NSString *filePath = [self cachePathForKey:key];
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[filePath stringByAppendingString:HFileInfoFileSuffix] error:nil];
     });
 }
 - (void)handleClearNotification:(NSNotification *)notification
@@ -264,6 +278,10 @@
         NSArray *files = [fileManager contentsOfDirectoryAtPath:self.cacheDir error:nil];
         for (NSString *fileName in files)
         {
+            if ([fileName hasSuffix:HFileInfoFileSuffix])
+            {
+                continue;
+            }
             NSString *filePath = [self.cacheDir stringByAppendingPathComponent:fileName];
             NSDictionary *attrs = [fileManager attributesOfItemAtPath:filePath error:nil];
             BOOL shouldDelete = NO;
@@ -298,6 +316,7 @@
             if (shouldDelete)
             {
                 [fileManager removeItemAtPath:filePath error:nil];
+                [fileManager removeItemAtPath:[filePath stringByAppendingString:HFileInfoFileSuffix] error:nil];
             }
         }
         //2.if no cache size just return
@@ -314,12 +333,16 @@
             NSMutableArray *fileInfos = [NSMutableArray new];
             for (NSString *fileName in files)
             {
+                if ([fileName hasSuffix:HFileInfoFileSuffix])
+                {
+                    continue;
+                }
                 NSString *filePath = [self.cacheDir stringByAppendingPathComponent:fileName];
                 NSDictionary *attrs = [fileManager attributesOfItemAtPath:filePath error:nil];
                 
                 HFileCacheFileInfo *fileInfo = [HFileCacheFileInfo new];
                 fileInfo.filePath = filePath;
-                fileInfo.lastAccess = [(NSDate *)attrs[HFileAccessTimeKey] timeIntervalSince1970];
+                fileInfo.lastAccess = [self _getAccessDateForFilePath:filePath];
                 fileInfo.size = [attrs fileSize];
                 [fileInfos addObject:fileInfo];
             }
@@ -332,6 +355,7 @@
             for (HFileCacheFileInfo *fileInfo in fileInfos)
             {
                 [fileManager removeItemAtPath:fileInfo.filePath error:nil];
+                [fileManager removeItemAtPath:[fileInfo.filePath stringByAppendingString:HFileInfoFileSuffix] error:nil];
                 cacheSize -= fileInfo.size;
                 if (cacheSize < self.maxCacheSize) break;
             }
