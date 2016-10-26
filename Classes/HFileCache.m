@@ -125,7 +125,7 @@
     NSError *error;
     NSString *dateString = [NSString stringWithFormat:@"%.2f", [accessDate timeIntervalSince1970]];
     NSString *accessFilePath = [filePath stringByAppendingString:HFileInfoFileSuffix];
-    [[NSFileManager defaultManager] removeItemAtPath:accessFilePath error:&error];
+    [[NSFileManager defaultManager] removeItemAtPath:accessFilePath error:nil];
     [dateString writeToFile:accessFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     NSAssert(!error, [error localizedDescription]);
 }
