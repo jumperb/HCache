@@ -25,7 +25,8 @@ Pod::Spec.new do |s|
   
   s.requires_arc = true
 
-  s.dependency 'Hodor'
+  s.dependency "Hodor/Defines"
+  s.dependency "Hodor/NS-Category"
   
   s.ios.deployment_target = '7.0'
 
