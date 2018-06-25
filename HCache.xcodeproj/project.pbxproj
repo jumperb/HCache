@@ -13,7 +13,6 @@
 		008476BB1BFC25FB008959FC /* MenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 008476BA1BFC25FB008959FC /* MenuVC.m */; };
 		00C7DC971C02FD7100DCE215 /* HFileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 00C7DC961C02FD7100DCE215 /* HFileCache.m */; };
 		5714123E5CE751497BBD7F85 /* libPods-HCache.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B93254BEB90A4F9B5A091E /* libPods-HCache.a */; };
-		B6871EF9110DEA5EAC1BCAE2 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E43CB08A693942437508FFA /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +39,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6871EF9110DEA5EAC1BCAE2 /* libPods.a in Frameworks */,
 				5714123E5CE751497BBD7F85 /* libPods-HCache.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
