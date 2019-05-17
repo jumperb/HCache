@@ -50,8 +50,13 @@
 
 - (instancetype)initWithDomain:(NSString *)domain
 {
+    return [self initWithDomain:domain cacheDir:nil];
+}
+- (instancetype)initWithDomain:(NSString *)domain cacheDir:(NSString *)cacheDir
+{
     self = [super init];
     if (self) {
+        self.cacheDir = cacheDir;
         [self setup:domain];
     }
     return self;
@@ -60,7 +65,7 @@
 {
     self.maxCacheSize = (50*1024*1024);
     self.queue = dispatch_queue_create([domain cStringUsingEncoding:NSUTF8StringEncoding], DISPATCH_QUEUE_CONCURRENT);
-    self.cacheDir = [NSFileManager cachePath:domain];
+    if (!self.cacheDir) self.cacheDir = [NSFileManager cachePath:domain];
     
     [[NSFileManager defaultManager] createDirectoryAtPath:self.cacheDir withIntermediateDirectories:YES attributes:nil error:NULL];
     

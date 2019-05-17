@@ -35,6 +35,7 @@
  *  @return
  */
 - (instancetype)initWithDomain:(NSString *)domain;
+- (instancetype)initWithDomain:(NSString *)domain cacheDir:(NSString *)cacheDir;
 /**
  *  init with custom directory path
  *  last path component must comform to the pattern 'com.hcache.xxx'，to avoid name conflict and help to clear cache
