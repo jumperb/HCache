@@ -154,23 +154,12 @@
 }
 - (void)setData:(NSData *)data forKey:(NSString *)key expire:(NSDate *)expire serial:(BOOL)serial
 {
-    if (!data || !key) return;
-<<<<<<< HEAD
-    dispatch_barrier_async(self.queue, ^{
-        NSString *filePath = [self cachePathForKey:key];
-        [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-        [data writeToFile:filePath atomically:YES];
-        //set expire time and access time
-        if (expire) [self _setExpire:expire forFilePath:filePath];
-        else [self _setExpire:[NSDate dateWithTimeIntervalSince1970:0] forFilePath:filePath];
-        [self _setAccessDate:[NSDate date] forFilePath:filePath];
-    });
-=======
-    
+    if (!data || !key) return;    
     if (serial)
     {
         dispatch_sync(self.queue, ^{
             NSString *filePath = [self cachePathForKey:key];
+            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
             [data writeToFile:filePath atomically:YES];
             //set expire time and access time
             if (expire) [self _setExpire:expire forFilePath:filePath];
@@ -182,6 +171,7 @@
     {
         dispatch_barrier_async(self.queue, ^{
             NSString *filePath = [self cachePathForKey:key];
+            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
             [data writeToFile:filePath atomically:YES];
             //set expire time and access time
             if (expire) [self _setExpire:expire forFilePath:filePath];
@@ -189,11 +179,6 @@
             [self _setAccessDate:[NSDate date] forFilePath:filePath];
         });
     }
-    
-    
-    
-    
->>>>>>> 42929ccab00d6d263893e01a56be2f8fd5884243
 }
 - (void)moveIntoFileItem:(NSString *)itemPath forKey:(NSString *)key expire:(NSDate *)expire
 {
