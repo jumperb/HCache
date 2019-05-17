@@ -125,7 +125,7 @@
     NSError *error;
     NSString *dateString = [NSString stringWithFormat:@"%.2f", [accessDate timeIntervalSince1970]];
     NSString *accessFilePath = [filePath stringByAppendingString:HFileInfoFileSuffix];
-    [[NSFileManager defaultManager] removeItemAtPath:accessFilePath error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:accessFilePath error:nil];    
     [dateString writeToFile:accessFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     NSAssert(!error, [error localizedDescription]);
 }
@@ -149,6 +149,7 @@
     if (!data || !key) return;
     dispatch_barrier_async(self.queue, ^{
         NSString *filePath = [self cachePathForKey:key];
+        [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         [data writeToFile:filePath atomically:YES];
         //set expire time and access time
         if (expire) [self _setExpire:expire forFilePath:filePath];
