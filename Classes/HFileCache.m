@@ -64,6 +64,7 @@
 - (void)setup:(NSString *)domain
 {
     self.maxCacheSize = (50*1024*1024);
+    self.shouldEncodeKey = YES;
     self.queue = dispatch_queue_create([domain cStringUsingEncoding:NSUTF8StringEncoding], DISPATCH_QUEUE_CONCURRENT);
     if (!self.cacheDir) self.cacheDir = [NSFileManager cachePath:domain];
     
@@ -79,6 +80,7 @@
     self = [super init];
     if (self) {
         self.maxCacheSize = (50*1024*1024);
+        self.shouldEncodeKey = YES;
         NSString *domain = [cacheDir lastPathComponent];
         self.queue = dispatch_queue_create([domain cStringUsingEncoding:NSUTF8StringEncoding], DISPATCH_QUEUE_CONCURRENT);
         self.cacheDir = cacheDir;
@@ -98,7 +100,10 @@
 - (NSString *)cachePathForKey:(NSString *)key
 {
     if (!key) return nil;
-    NSString *fileName = [key md5];
+    NSString *fileName = key;
+    if (self.shouldEncodeKey) {
+        fileName = [key md5];
+    }
     if (self.fileExtension)
     {
         fileName = [fileName stringByAppendingFormat:@".%@", self.fileExtension];
@@ -249,25 +254,7 @@
     }
     return res;
 }
-- (long long)getSize
-{
-    __block long long size = 0;
-    dispatch_sync(self.queue, ^{
-        size = [self _getSize];
-    });
-    return size;
-}
-- (long long)_getSize
-{
-    long long size = 0;
-    NSDirectoryEnumerator *fileEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:self.cacheDir];
-    for (NSString *fileName in fileEnumerator) {
-        NSString *filePath = [self.cacheDir stringByAppendingPathComponent:fileName];
-        NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-        size += [attrs fileSize];
-    }
-    return size;
-}
+
 
 - (void)backgroundCleanDisk {
     Class UIApplicationClass = NSClassFromString(@"UIApplication");
@@ -401,5 +388,57 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:self.cacheDir withIntermediateDirectories:YES attributes:nil error:NULL];
         if (finish) finish(self);
     });
+}
+- (long long)cacheCount {
+    __block long long count = 0;
+    dispatch_sync(self.queue, ^{
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSArray *files = [fileManager contentsOfDirectoryAtPath:self.cacheDir error:nil];
+        for (NSString *fileName in files)
+        {
+            if ([fileName hasSuffix:HFileInfoFileSuffix])
+            {
+                continue;
+            }
+            count ++;
+        }
+    });
+    return count;
+}
+- (long long)getSize
+{
+    __block long long size = 0;
+    dispatch_sync(self.queue, ^{
+        size = [self _getSize];
+    });
+    return size;
+}
+- (long long)_getSize
+{
+    long long size = 0;
+    NSDirectoryEnumerator *fileEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:self.cacheDir];
+    for (NSString *fileName in fileEnumerator) {
+        NSString *filePath = [self.cacheDir stringByAppendingPathComponent:fileName];
+        NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+        size += [attrs fileSize];
+    }
+    return size;
+}
+
+- (NSArray *)allFileNames {
+    NSMutableArray *res = [NSMutableArray new];
+    dispatch_sync(self.queue, ^{
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSArray *files = [fileManager contentsOfDirectoryAtPath:self.cacheDir error:nil];
+        for (NSString *fileName in files)
+        {
+            if ([fileName hasSuffix:HFileInfoFileSuffix])
+            {
+                continue;
+            }
+            [res addObject:fileName];
+        }
+    });
+    return res;
 }
 @end

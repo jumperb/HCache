@@ -28,140 +28,75 @@
 @property (nonatomic) long long maxCacheSize;
 //file extention default is nil
 @property (nonatomic) NSString *fileExtension;
-/**
- *  init with custom domain
- *  must conform to the pattern 'com.hcache.xxx' to avoid name conflict and help to clear cache
- *  @param domain 
- *  @return
- */
+//if encode key by md5 as filename, default is YES
+@property (nonatomic) BOOL shouldEncodeKey;
+//init with custom domain
+//must conform to the pattern 'com.hcache.xxx' to avoid name conflict and help to clear cache
 - (instancetype)initWithDomain:(NSString *)domain;
 - (instancetype)initWithDomain:(NSString *)domain cacheDir:(NSString *)cacheDir;
-/**
- *  init with custom directory path
- *  last path component must comform to the pattern 'com.hcache.xxx'，to avoid name conflict and help to clear cache
- *  @param cacheDir: directory path
- *  @return
- */
+
+//init with custom directory path
+//last path component must comform to the pattern 'com.hcache.xxx'，to avoid name conflict and help to clear cache
+//cacheDir: directory path
 - (instancetype)initWithCacheDir:(NSString *)cacheDir;
 //singleton
 + (instancetype)shareCache;
 
-/**
- *  get a file cache path by key
- *
- *  @param key key
- *
- *  @return path
- */
+//get a file cache path by key
 - (NSString *)cachePathForKey:(NSString *)key;
 
-/**
- *  is cache exsit
- *  @param key key
- *  @return
- */
+//is cache exsit
 - (BOOL)cacheExsitForKey:(NSString *)key;
 
-/**
- *  is cache exsit
- *  @param key key
- *  @param serial concurrent or serial
- *
- *  @return 
- */
+//is cache exsit
+//serial: concurrent or serial
 - (BOOL)cacheExsitForKey:(NSString *)key serial:(BOOL)serial;
 
-/**
- *  save cache data
- *
- *  @param data
- *  @param key
- */
+//save cache data
 - (void)setData:(NSData *)data forKey:(NSString *)key;
 - (void)setData:(NSData *)data forKey:(NSString *)key serial:(BOOL)serial;
-/**
- *  save cache data
- *
- *  @param data
- *  @param key
- *  @param expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
- */
+
+//save cache data
+//expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
 - (void)setData:(NSData *)data forKey:(NSString *)key expire:(NSDate *)expire;
 - (void)setData:(NSData *)data forKey:(NSString *)key expire:(NSDate *)expire serial:(BOOL)serial;
-/**
- *  move file to cache from other place
- *
- *  @param data
- *  @param key
- *  @param expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
- */
+
+//move file to cache from other place
+//expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
 - (void)moveIntoFileItem:(NSString *)itemPath forKey:(NSString *)key expire:(NSDate *)expire;
 
-/**
- *  get cached data by key
- *
- *  @param key key
- *
- *  @return
- */
+//get cached data by key
 - (NSData *)dataForKey:(NSString *)key;
 
-
-/**
- *  get cached data by key
- *
- *  @param key        key
- *  @param serial concurrent or serial
- *
- *  @return
- */
+//get cached data by key
+//serial: concurrent or serial
 - (NSData *)dataForKey:(NSString *)key serial:(BOOL)serial;
 
-/**
- *  directly set expire time to a cached file, if exist
- *  
- *  @param expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
- *
- *  @param filePath
- */
+//directly set expire time to a cached file, if exist
+//expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
 - (void)setExpire:(NSDate *)expire forFilePath:(NSString *)filePath;
 
-/**
- *  directly set access time to a cache file, if exsit
- *
- *  @param accessDate: last read/write time, if the cache is over size, it will clear data whose access time is earliest
- *
- *  @param filePath
- */
+//directly set access time to a cache file, if exsit
+//accessDate: last read/write time, if the cache is over size, it will clear data whose access time is earliest
 - (void)setAccessDate:(NSDate *)accessDate forFilePath:(NSString *)filePath;
 
-/**
- *  get cache size
- *  
- *  @return size
- */
-- (long long)getSize;
 
 
-/**
- *  delete file cache by key
- *
- *  @param key
- */
+//delete file cache by key
 - (void)removeFileForKey:(NSString *)key;
 
-/**
- *  clear
- *
- *  @param finish
- */
+//clear
 - (void)clearExpire:(simple_callback)finish;
 
-
-/**
- *  clear all
- *
- *  @param finish
- */
+//clear all
 - (void)clearAll:(simple_callback)finish;
+
+//get cahceCount
+- (long long)cacheCount;
+
+//get cache file size
+- (long long)getSize;
+
+//get all file name;
+- (NSArray *)allFileNames;
 @end
