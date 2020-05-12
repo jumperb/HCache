@@ -48,18 +48,12 @@
 //is cache exsit
 - (BOOL)cacheExsitForKey:(NSString *)key;
 
-//is cache exsit
-//serial: concurrent or serial
-- (BOOL)cacheExsitForKey:(NSString *)key serial:(BOOL)serial;
-
 //save cache data
 - (void)setData:(NSData *)data forKey:(NSString *)key;
-- (void)setData:(NSData *)data forKey:(NSString *)key serial:(BOOL)serial;
 
 //save cache data
 //expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
 - (void)setData:(NSData *)data forKey:(NSString *)key expire:(NSDate *)expire;
-- (void)setData:(NSData *)data forKey:(NSString *)key expire:(NSDate *)expire serial:(BOOL)serial;
 
 //move file to cache from other place
 //expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
@@ -68,9 +62,6 @@
 //get cached data by key
 - (NSData *)dataForKey:(NSString *)key;
 
-//get cached data by key
-//serial: concurrent or serial
-- (NSData *)dataForKey:(NSString *)key serial:(BOOL)serial;
 
 //directly set expire time to a cached file, if exist
 //expire: expire time, once current time greater than the time, the cache file will be deleted, set nil means never expire
