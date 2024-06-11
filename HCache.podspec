@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "HCache"
-  s.version      = "1.3.2"
+  s.version      = "1.3.3"
   s.summary      = "A short description of HCache."
 
   s.description  = <<-DESC
@@ -28,6 +28,6 @@ Pod::Spec.new do |s|
   s.dependency "Hodor/Defines"
   s.dependency "Hodor/NS-Category"
   
-  s.ios.deployment_target = '7.0'
+  s.ios.deployment_target = '11.0'
 
 end
